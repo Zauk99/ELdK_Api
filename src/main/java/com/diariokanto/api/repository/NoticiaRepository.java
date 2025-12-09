@@ -7,6 +7,9 @@ import java.util.List;
 public interface NoticiaRepository extends JpaRepository<Noticia, Long> {
     // Para filtrar noticias por categoría (Requisito de interfaz)
     List<Noticia> findByCategoria_Id(Long categoriaId);
+
+    // 👇 NUEVO: Busca por el nombre de la categoría relacionada
+    List<Noticia> findByCategoria_Nombre(String nombreCategoria);
     
     // Para ordenar las noticias por fecha (las nuevas primero)
     List<Noticia> findAllByOrderByFechaPublicacionDesc();

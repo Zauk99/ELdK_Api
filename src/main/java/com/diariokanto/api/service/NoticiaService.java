@@ -157,4 +157,11 @@ public class NoticiaService {
                 .collect(Collectors.toList());
     }
 
+    // Método para filtrar por nombre de categoría
+    public List<NoticiaDTO> buscarPorCategoria(String nombreCategoria) {
+        return noticiaRepository.findByCategoria_Nombre(nombreCategoria).stream()
+                .map(this::mapearADTO)
+                .collect(Collectors.toList());
+    }
+
 }

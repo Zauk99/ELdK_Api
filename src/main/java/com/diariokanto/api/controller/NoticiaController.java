@@ -103,10 +103,17 @@ public class NoticiaController {
     }
 
     @GetMapping
-    public List<NoticiaDTO> listar(@RequestParam(required = false) String busqueda) {
+    public List<NoticiaDTO> listar(@RequestParam(required = false) String busqueda,
+                                   @RequestParam(required = false) String categoria) { // <--- Nuevo param
+        
         if (busqueda != null && !busqueda.isEmpty()) {
             return noticiaService.buscarPorTitulo(busqueda);
         }
+        
+        if (categoria != null && !categoria.isEmpty()) {
+            return noticiaService.buscarPorCategoria(categoria); // <--- Usamos el nuevo servicio
+        }
+
         return noticiaService.obtenerTodas();
     }
 }
