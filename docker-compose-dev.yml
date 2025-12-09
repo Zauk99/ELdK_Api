@@ -1,0 +1,16 @@
+services:
+  # Servicio de Base de Datos PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: diariokanto-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: diariokanto_db      # Nombre de la BD que se creará sola
+      POSTGRES_USER: postgres          # Usuario maestro
+      POSTGRES_PASSWORD: postgres      # Contraseña maestra
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

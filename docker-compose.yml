@@ -1,0 +1,30 @@
+services:
+  # Servicio 1: Base de Datos PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: diariokanto-db
+    environment:
+      POSTGRES_DB: diariokanto_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Servicio 2: Tu API Backend
+  api:
+    build: .  # Construye usando el Dockerfile de esta carpeta
+    container_name: diariokanto-api
+    ports:
+      - "8080:8080"
+    environment:
+      # Conexión a la BBDD (usamos el nombre del servicio 'db' como host)
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/diariokanto_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
