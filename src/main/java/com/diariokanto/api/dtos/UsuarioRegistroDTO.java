@@ -9,4 +9,5 @@ public class UsuarioRegistroDTO {
     private String email;
     private String password;
     private String movil;
+    private String pokemonFavorito;
 }

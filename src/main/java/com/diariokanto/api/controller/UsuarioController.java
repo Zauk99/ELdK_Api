@@ -93,7 +93,7 @@ public class UsuarioController {
     // POST /api/usuarios/registro
     // Cambiamos a Multipart para aceptar fichero y datos
     @PostMapping(value = "/registro", consumes = { "multipart/form-data" })
-    public ResponseEntity<UsuarioDTO> registrar(
+    public ResponseEntity<?> registrar(
             @ModelAttribute UsuarioRegistroDTO registroDTO,
             @RequestParam(value = "foto", required = false) MultipartFile foto) {
 
@@ -114,7 +114,7 @@ public class UsuarioController {
             return ResponseEntity.ok(nuevoUsuario);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

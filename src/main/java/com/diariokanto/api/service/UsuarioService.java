@@ -138,6 +138,7 @@ public class UsuarioService {
         usuario.setMovil(registroDTO.getMovil());
         usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
         usuario.setRol("USER");
+        usuario.setPokemonFavorito(registroDTO.getPokemonFavorito());
         
         // 3. TOKEN Y ESTADO
         usuario.setTokenConfirmacion(UUID.randomUUID().toString());
