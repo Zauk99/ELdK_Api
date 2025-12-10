@@ -8,6 +8,6 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
     // Para ver "Mis Equipos" en el perfil
     List<Equipo> findByUsuario_Id(Long usuarioId);
     
-    // Para ver los últimos equipos creados por la comunidad (Opcional)
-    List<Equipo> findAllByOrderByFechaCreacionDesc();
+    // Para "Equipos de la Comunidad" (solo los públicos)
+    List<Equipo> findAllByPublicoTrueOrderByFechaCreacionDesc();
 }

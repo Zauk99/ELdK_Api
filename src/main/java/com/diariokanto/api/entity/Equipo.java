@@ -28,6 +28,9 @@ public class Equipo {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
+    @Column(nullable = false)
+    private boolean publico = true;
+
     // Relación con los Pokémon (Un equipo tiene hasta 6 miembros)
     // 'cascade = ALL' significa que si borras el equipo, se borran sus miembros
     @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL, orphanRemoval = true)

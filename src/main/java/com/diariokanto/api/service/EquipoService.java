@@ -16,8 +16,15 @@ public class EquipoService {
     @Autowired private EquipoRepository equipoRepository;
     @Autowired private UsuarioRepository usuarioRepository;
 
-    public List<Equipo> obtenerTodos() {
-        return equipoRepository.findAllByOrderByFechaCreacionDesc();
+    public List<Equipo> obtenerPublicos() {
+        return equipoRepository.findAllByPublicoTrueOrderByFechaCreacionDesc();
+    }
+
+    // Método para el perfil (todos los del usuario)
+    public List<Equipo> obtenerPorUsuario(String email) {
+         Usuario u = usuarioRepository.findByEmail(email).orElse(null);
+         if(u == null) return List.of();
+         return equipoRepository.findByUsuario_Id(u.getId());
     }
 
     public void crearEquipo(EquipoDTO dto, String emailUsuario) {
@@ -28,6 +35,7 @@ public class EquipoService {
         equipo.setNombre(dto.getNombre());
         equipo.setDescripcion(dto.getDescripcion());
         equipo.setFechaCreacion(LocalDateTime.now());
+        equipo.setPublico(dto.isPublico());
         equipo.setUsuario(usuario);
 
         // Convertir miembros DTO a Entidad
