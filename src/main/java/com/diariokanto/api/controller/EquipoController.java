@@ -57,15 +57,17 @@ public class EquipoController {
     // GET /api/equipos/mis-equipos (Privado: Todos los míos)
     @GetMapping("/mis-equipos")
     public List<Map<String, Object>> listarMisEquipos(@RequestParam String email) {
-        // Misma lógica de mapeo que listarComunidad pero llamando a obtenerPorUsuario(email)
          return equipoService.obtenerPorUsuario(email).stream().map(e -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", e.getId());
             map.put("nombre", e.getNombre());
             map.put("descripcion", e.getDescripcion());
             map.put("usuarioNombre", e.getUsuario().getUsername());
-            map.put("publico", e.isPublico());
-            // Lista simple de miembros
+            
+            // --- ¡ESTA LÍNEA ES LA QUE FALTA! ---
+            map.put("publico", e.isPublico()); 
+            // ------------------------------------
+
             List<Map<String, String>> miembros = new ArrayList<>();
             e.getMiembros().forEach(m -> {
                 Map<String, String> pm = new HashMap<>();
@@ -77,4 +79,26 @@ public class EquipoController {
             return map;
         }).collect(Collectors.toList());
     }
+
+    // GET /api/equipos/{id}
+    @GetMapping("/{id}")
+    public ResponseEntity<EquipoDTO> obtenerPorId(@PathVariable Long id) {
+        EquipoDTO equipo = equipoService.obtenerEquipoPorId(id);
+        if (equipo != null) {
+            return ResponseEntity.ok(equipo);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    // DELETE /api/equipos/{id}?email=...
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminar(@PathVariable Long id, @RequestParam String email) {
+        try {
+            equipoService.eliminarEquipo(id, email);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
 }
