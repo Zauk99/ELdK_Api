@@ -71,6 +71,14 @@ public class EquipoService {
                 miembro.setObjeto(mDto.getObjeto());         // <--- IMPORTANTE
                 miembro.setHabilidad(mDto.getHabilidad());   // <--- IMPORTANTE
                 miembro.setNaturaleza(mDto.getNaturaleza()); // <--- IMPORTANTE
+
+                // NUEVOS CAMPOS DE EVS
+                miembro.setHpEv(mDto.getHpEv());
+                miembro.setAttackEv(mDto.getAttackEv());
+                miembro.setDefenseEv(mDto.getDefenseEv());
+                miembro.setSpAttackEv(mDto.getSpAttackEv());
+                miembro.setSpDefenseEv(mDto.getSpDefenseEv());
+                miembro.setSpeedEv(mDto.getSpeedEv());
                 
                 miembro.setMovimiento1(mDto.getMovimiento1()); // <--- IMPORTANTE
                 miembro.setMovimiento2(mDto.getMovimiento2());
@@ -86,33 +94,48 @@ public class EquipoService {
 
     public EquipoDTO obtenerEquipoPorId(Long id) {
         Equipo equipo = equipoRepository.findById(id).orElse(null);
-        if (equipo == null)
-            return null;
+        if (equipo == null) return null;
 
-        // Mapeo manual Entidad -> DTO (para incluir TODOS los detalles)
         EquipoDTO dto = new EquipoDTO();
         dto.setId(equipo.getId());
         dto.setNombre(equipo.getNombre());
         dto.setDescripcion(equipo.getDescripcion());
         dto.setPublico(equipo.isPublico());
-
+        
         List<MiembroEquipoDTO> miembrosDTO = new ArrayList<>();
+        
         for (MiembroEquipo m : equipo.getMiembros()) {
             MiembroEquipoDTO mDto = new MiembroEquipoDTO();
+            
+            // Datos básicos
             mDto.setId(m.getId());
             mDto.setNombrePokemon(m.getNombrePokemon());
             mDto.setMote(m.getMote());
+            
+            // Datos técnicos
             mDto.setObjeto(m.getObjeto());
             mDto.setHabilidad(m.getHabilidad());
             mDto.setNaturaleza(m.getNaturaleza());
+            
+            // Movimientos
             mDto.setMovimiento1(m.getMovimiento1());
             mDto.setMovimiento2(m.getMovimiento2());
             mDto.setMovimiento3(m.getMovimiento3());
             mDto.setMovimiento4(m.getMovimiento4());
+
+            // --- ¡ESTO ES LO QUE FALTABA! RECUPERAR LOS EVs ---
+            mDto.setHpEv(m.getHpEv());
+            mDto.setAttackEv(m.getAttackEv());
+            mDto.setDefenseEv(m.getDefenseEv());
+            mDto.setSpAttackEv(m.getSpAttackEv());
+            mDto.setSpDefenseEv(m.getSpDefenseEv());
+            mDto.setSpeedEv(m.getSpeedEv());
+            // --------------------------------------------------
+
             miembrosDTO.add(mDto);
         }
         dto.setMiembros(miembrosDTO);
-
+        
         return dto;
     }
 

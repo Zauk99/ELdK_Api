@@ -31,6 +31,16 @@ public class MiembroEquipo {
     private String movimiento3;
     private String movimiento4;
 
+    // ... otros campos ...
+    
+    // Effort Values (EVs) - Rango 0 a 252
+    private int hpEv;
+    private int attackEv;
+    private int defenseEv;
+    private int spAttackEv;
+    private int spDefenseEv;
+    private int speedEv;
+
     // Relación inversa: A qué equipo pertenece
     @ManyToOne
     @JoinColumn(name = "equipo_id", nullable = false)

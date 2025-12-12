@@ -17,7 +17,7 @@ public class DataInitializer {
     CommandLineRunner initDatabase(UsuarioRepository usuarioRepo,
             CategoriaRepository categoriaRepo,
             NoticiaRepository noticiaRepo,
-            EquipoRepository equipoRepo, // <--- Inyectamos el nuevo repo
+            EquipoRepository equipoRepo,
             PasswordEncoder passwordEncoder) {
         return args -> {
             // 1. INICIALIZAR CATEGORÍAS
@@ -86,65 +86,85 @@ public class DataInitializer {
                 }
             }
 
-            // 4. INICIALIZAR EQUIPOS
+            // 4. INICIALIZAR EQUIPOS COMPLETOS
+            // Descomenta la siguiente línea si quieres borrar los equipos viejos al reiniciar:
+            // equipoRepo.deleteAll(); 
+            
             if (equipoRepo.count() == 0) {
+                Usuario admin = usuarioRepo.findByEmail("admin@diariokanto.com").orElse(null);
                 Usuario ash = usuarioRepo.findByEmail("ash@kanto.com").orElse(null);
 
                 if (ash != null) {
-                    // EQUIPO 1
-                    Equipo team1 = new Equipo();
-                    team1.setNombre("Kanto Champions");
-                    team1.setDescripcion("Mi equipo clásico para la liga Añil.");
-                    team1.setFechaCreacion(LocalDateTime.now());
-                    team1.setUsuario(ash);
-                    team1.setPublico(true); // <--- IMPORTANTE: Hacerlo público
+                    // --- EQUIPO DE ASH (Full Offensive) ---
+                    Equipo teamAsh = new Equipo();
+                    teamAsh.setNombre("Equipo de Ensueño");
+                    teamAsh.setDescripcion("El equipo campeón de la Liga Mundial.");
+                    teamAsh.setFechaCreacion(LocalDateTime.now());
+                    teamAsh.setUsuario(ash);
+                    teamAsh.setPublico(true);
 
-                    MiembroEquipo pika = new MiembroEquipo();
-                    pika.setPokemonApiId(25L);
-                    pika.setNombrePokemon("pikachu");
-                    pika.setObjeto("Bola Luminosa");
-                    pika.setMovimiento1("Rayo");
-                    team1.addMiembro(pika);
+                    // 1. Pikachu
+                    teamAsh.addMiembro(crearMiembro(25L, "pikachu", "Compadre", "Bola Luminosa", "Elec. Estática", "Alegre", 
+                            "Rayo", "Cola Férrea", "Voltiocambio", "Ataque Rápido", 0, 252, 0, 0, 4, 252));
+                    
+                    // 2. Charizard
+                    teamAsh.addMiembro(crearMiembro(6L, "charizard", "Dracarys", "Vidasfera", "Poder Solar", "Miedosa", 
+                            "Lanzallamas", "Rayo Solar", "Onda Certera", "Respiro", 0, 0, 4, 252, 0, 252));
+                    
+                    // 3. Greninja
+                    teamAsh.addMiembro(crearMiembro(658L, "greninja", "Ninja", "Gafas Elección", "Fuerte Afecto", "Miedosa", 
+                            "Shuriken de Agua", "Pulso Umbrío", "Rayo Hielo", "Ida y Vuelta", 0, 0, 4, 252, 0, 252));
+                    
+                    // 4. Lucario
+                    teamAsh.addMiembro(crearMiembro(448L, "lucario", "Aura", "Banda Focus", "Foco Interno", "Alegre", 
+                            "A Bocajarro", "Puño Meteoro", "Veloc. Extrema", "Danza Espada", 0, 252, 0, 0, 4, 252));
 
-                    // (Añade el resto de miembros que tenías...)
-                    MiembroEquipo zard = new MiembroEquipo();
-                    zard.setPokemonApiId(6L);
-                    zard.setNombrePokemon("charizard");
-                    team1.addMiembro(zard);
+                    // 5. Gengar
+                    teamAsh.addMiembro(crearMiembro(94L, "gengar", "Spooky", "Lodo Negro", "Cuerpo Maldito", "Miedosa", 
+                            "Bola Sombra", "Bomba Lodo", "Maquinación", "Sustituto", 0, 0, 4, 252, 0, 252));
 
-                    equipoRepo.save(team1);
+                    // 6. Dragonite
+                    teamAsh.addMiembro(crearMiembro(149L, "dragonite", "Cartero", "Baya Ziuela", "Foco Interno", "Firme", 
+                            "Danza Dragón", "Enfado", "Terremoto", "Veloc. Extrema", 4, 252, 0, 0, 0, 252));
 
-                    // EQUIPO 2
-                    Equipo team2 = new Equipo();
-                    team2.setNombre("Rain Dance Team");
-                    team2.setDescripcion("Equipo de lluvia.");
-                    team2.setFechaCreacion(LocalDateTime.now().minusDays(5));
-                    team2.setUsuario(ash);
-                    team2.setPublico(true); // <--- IMPORTANTE
+                    equipoRepo.save(teamAsh);
+                }
 
-                    MiembroEquipo poli = new MiembroEquipo();
-                    poli.setPokemonApiId(186L);
-                    poli.setNombrePokemon("politoed");
-                    team2.addMiembro(poli);
+                if (admin != null) {
+                    // --- EQUIPO DE ADMIN (Red's Legends - Bulky Offense) ---
+                    Equipo teamRed = new Equipo();
+                    teamRed.setNombre("Leyendas del Monte Plateado");
+                    teamRed.setDescripcion("El equipo definitivo de Rojo.");
+                    teamRed.setFechaCreacion(LocalDateTime.now().minusDays(1));
+                    teamRed.setUsuario(admin);
+                    teamRed.setPublico(true);
 
-                    equipoRepo.save(team2);
+                    // 1. Venusaur
+                    teamRed.addMiembro(crearMiembro(3L, "venusaur", "Bruteroot", "Lodo Negro", "Clorofila", "Osada", 
+                            "Gigadrenado", "Bomba Lodo", "Síntesis", "Somnífero", 252, 0, 252, 4, 0, 0));
 
-                    // EQUIPO 3: PRIVADO (Para probar que NO sale en la comunidad)
-                    Equipo team3 = new Equipo();
-                    team3.setNombre("Estrategia Secreta");
-                    team3.setDescripcion("Top secret.");
-                    team3.setFechaCreacion(LocalDateTime.now().minusDays(1));
-                    team3.setUsuario(ash);
-                    team3.setPublico(false); // <--- PRIVADO
+                    // 2. Blastoise
+                    teamRed.addMiembro(crearMiembro(9L, "blastoise", "Caparazón", "Restos", "Torrente", "Modesta", 
+                            "Escaldar", "Rayo Hielo", "Giro Rápido", "Pulso Umbrío", 252, 0, 4, 252, 0, 0));
 
-                    MiembroEquipo mewtwo = new MiembroEquipo();
-                    mewtwo.setPokemonApiId(150L);
-                    mewtwo.setNombrePokemon("mewtwo");
-                    team3.addMiembro(mewtwo);
+                    // 3. Snorlax
+                    teamRed.addMiembro(crearMiembro(143L, "snorlax", "Grandullón", "Restos", "Sebo", "Cauta", 
+                            "Golpe Cuerpo", "Maldición", "Descanso", "Sonámbulo", 252, 0, 4, 0, 252, 0));
 
-                    equipoRepo.save(team3);
+                    // 4. Espeon
+                    teamRed.addMiembro(crearMiembro(196L, "espeon", "Sol", "Refleluz", "Espejo Mágico", "Miedosa", 
+                            "Psíquico", "Brillo Mágico", "Reflejo", "Pantalla de Luz", 0, 0, 4, 252, 0, 252));
 
-                    System.out.println(">>> Equipos de prueba creados.");
+                    // 5. Lapras
+                    teamRed.addMiembro(crearMiembro(131L, "lapras", "Nessie", "Baya Zidra", "Absorbe Agua", "Modesta", 
+                            "Liofilización", "Surf", "Rayo", "Canto Helado", 248, 0, 0, 252, 8, 0));
+
+                    // 6. Pikachu (Red's Ace)
+                    teamRed.addMiembro(crearMiembro(25L, "pikachu", "Sparky", "Bola Luminosa", "Elec. Estática", "Ingenua", 
+                            "Rayo", "Cola Férrea", "Demolición", "Sorpresa", 0, 252, 0, 4, 0, 252));
+
+                    equipoRepo.save(teamRed);
+                    System.out.println(">>> Equipos de prueba creados en Español.");
                 }
             }
         };
@@ -154,5 +174,31 @@ public class DataInitializer {
         Categoria c = new Categoria();
         c.setNombre(nombre);
         return c;
+    }
+
+    // Método helper para crear miembros de equipo rápido con EVs
+    private MiembroEquipo crearMiembro(Long apiId, String nombre, String mote, String objeto, String hab, String nat, 
+                                       String m1, String m2, String m3, String m4,
+                                       int hp, int atk, int def, int spa, int spd, int spe) {
+        MiembroEquipo m = new MiembroEquipo();
+        m.setPokemonApiId(apiId);
+        m.setNombrePokemon(nombre);
+        m.setMote(mote);
+        m.setObjeto(objeto);
+        m.setHabilidad(hab);
+        m.setNaturaleza(nat);
+        m.setMovimiento1(m1);
+        m.setMovimiento2(m2);
+        m.setMovimiento3(m3);
+        m.setMovimiento4(m4);
+        // EVs
+        m.setHpEv(hp);
+        m.setAttackEv(atk);
+        m.setDefenseEv(def);
+        m.setSpAttackEv(spa);
+        m.setSpDefenseEv(spd);
+        m.setSpeedEv(spe);
+        
+        return m;
     }
 }
