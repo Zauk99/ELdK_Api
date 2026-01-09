@@ -48,7 +48,7 @@ public class NoticiaController {
         } catch (Exception e) {
             return "Error creando datos: " + e.getMessage();
         }
-    }
+    }   
 
     @PostMapping("/crear")
     public ResponseEntity<NoticiaDTO> crearNoticia(@RequestBody NoticiaDTO noticiaDTO) {
