@@ -10,4 +10,6 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
     
     // Para "Equipos de la Comunidad" (solo los públicos)
     List<Equipo> findAllByPublicoTrueOrderByFechaCreacionDesc();
+
+    void deleteByUsuarioId(Long usuarioId);
 }

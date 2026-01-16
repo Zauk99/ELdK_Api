@@ -3,12 +3,15 @@ package com.diariokanto.api.service;
 import com.diariokanto.api.dtos.UsuarioDTO;
 import com.diariokanto.api.dtos.UsuarioRegistroDTO;
 import com.diariokanto.api.entity.Usuario;
+import com.diariokanto.api.repository.ComentarioRepository;
+import com.diariokanto.api.repository.EquipoRepository;
 import com.diariokanto.api.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +30,10 @@ public class UsuarioService {
 
     @Autowired
     private PasswordEncoder passwordEncoder; // Necesitas configurar esto en una clase de config
+
+    // AÑADIR ESTAS INYECCIONES
+    @Autowired private EquipoRepository equipoRepository;
+    @Autowired private ComentarioRepository comentarioRepository;
 
     public UsuarioDTO registrarUsuario(UsuarioRegistroDTO registroDTO) {
         if (usuarioRepository.existsByEmail(registroDTO.getEmail())) {
@@ -107,10 +114,30 @@ public class UsuarioService {
     }
 
     // DELETE
+    @Transactional // Importante para que borre todo o nada
     public void eliminarUsuario(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new RuntimeException("Usuario no encontrado");
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // 1. Protecciones (Super Admin y Último Admin) - MANTENER ESTO
+        if (usuario.isSuperAdmin()) {
+            throw new RuntimeException("No se puede eliminar al Super Administrador principal.");
         }
+        if ("ADMIN".equals(usuario.getRol())) {
+            long adminCount = usuarioRepository.findAll().stream()
+                    .filter(u -> "ADMIN".equals(u.getRol()))
+                    .count();
+            if (adminCount <= 1) {
+                throw new RuntimeException("No puedes eliminar tu cuenta porque eres el último administrador.");
+            }
+        }
+
+        // 2. BORRADO EN CASCADA MANUAL (Solución al error 400)
+        // Primero borramos sus dependencias
+        comentarioRepository.deleteByUsuarioId(id);
+        equipoRepository.deleteByUsuarioId(id);
+
+        // 3. Finalmente borramos el usuario
         usuarioRepository.deleteById(id);
     }
 

@@ -7,4 +7,5 @@ import java.util.List;
 public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
     // Obtener comentarios de una noticia específica
     List<Comentario> findByNoticia_Id(Long noticiaId);
+    void deleteByUsuarioId(Long usuarioId);
 }
