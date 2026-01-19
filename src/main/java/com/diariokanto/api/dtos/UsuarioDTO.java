@@ -13,5 +13,6 @@ public class UsuarioDTO {
     private String rol;
     private String movil;
     private boolean superAdmin;
+    private boolean twoFactorEnabled; // Nuevo campo
     // ¡OJO! Aquí NUNCA ponemos la password
 }

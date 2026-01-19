@@ -92,6 +92,7 @@ public class UsuarioService {
         dto.setRol(u.getRol());
         dto.setMovil(u.getMovil());
         dto.setSuperAdmin(u.isSuperAdmin());
+        dto.setTwoFactorEnabled(u.isTwoFactorEnabled());
         return dto;
     }
 

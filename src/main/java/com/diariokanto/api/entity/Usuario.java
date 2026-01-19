@@ -1,5 +1,7 @@
 package com.diariokanto.api.entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -48,6 +50,28 @@ public class Usuario {
     private String tokenRecuperacion;
     private String tokenConfirmacion;
     private boolean cuentaConfirmada = false;
+
+    // --- NUEVOS CAMPOS 2FA ---
+    // ... otros campos ...
+
+    // --- NUEVOS CAMPOS 2FA (CORREGIDOS) ---
+    
+    // Usamos la anotación @Column para dar un valor por defecto en la BD
+    // nullable = false significa que es obligatorio, pero columnDefinition lo rellena
+    @Column(columnDefinition = "boolean default false")
+    private boolean twoFactorEnabled = false;
+    
+    // El secreto puede ser nulo (para usuarios que no lo activen)
+    private String twoFactorSecret; 
+
+    // Inicializamos a 0 por defecto en la BD
+    @Column(columnDefinition = "integer default 0")
+    private int intentosFallidos2FA = 0;
+    
+    // Este puede ser nulo, así que no hay problema
+    private LocalDateTime tiempoBloqueo2FA; 
+
+    // ... getters y setters ...
 
     // ... otros campos ...
 
