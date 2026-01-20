@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.diariokanto.api.ApiApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.765 s -- in com.diariokanto.api.ApiApplicationTests

@@ -1,25 +1,34 @@
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\ApiApplication.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\config\DataInitializer.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\config\MvcConfig.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\config\SecurityConfig.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\controller\CategoriaController.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\controller\ComentarioController.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\controller\NoticiaController.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\controller\UsuarioController.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\dtos\ComentarioDTO.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\dtos\CrearComentarioRequest.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\dtos\NoticiaDTO.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\dtos\UsuarioDTO.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\dtos\UsuarioRegistroDTO.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\entity\Categoria.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\entity\Comentario.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\entity\Noticia.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\entity\Usuario.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\repository\CategoriaRepository.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\repository\ComentarioRepository.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\repository\NoticiaRepository.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\repository\UsuarioRepository.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\service\CategoriaService.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\service\ComentarioService.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\service\NoticiaService.java
-C:\Users\pablo\Downloads\api\src\main\java\com\diariokanto\api\service\UsuarioService.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\ApiApplication.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\config\DataInitializer.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\config\MvcConfig.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\config\SecurityConfig.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\controller\CategoriaController.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\controller\ComentarioController.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\controller\EquipoController.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\controller\NoticiaController.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\controller\TwoFactorController.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\controller\UsuarioController.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\dtos\ComentarioDTO.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\dtos\CrearComentarioRequest.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\dtos\EquipoDTO.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\dtos\MiembroEquipoDTO.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\dtos\NoticiaDTO.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\dtos\UsuarioDTO.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\dtos\UsuarioRegistroDTO.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\entity\Categoria.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\entity\Comentario.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\entity\Equipo.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\entity\MiembroEquipo.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\entity\Noticia.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\entity\Usuario.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\repository\CategoriaRepository.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\repository\ComentarioRepository.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\repository\EquipoRepository.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\repository\NoticiaRepository.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\repository\UsuarioRepository.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\service\CategoriaService.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\service\ComentarioService.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\service\EquipoService.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\service\NoticiaService.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\service\TwoFactorService.java
+C:\Users\Pablo Herrera\ELdK_Api\src\main\java\com\diariokanto\api\service\UsuarioService.java
