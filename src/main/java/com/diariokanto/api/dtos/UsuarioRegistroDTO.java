@@ -1,10 +1,15 @@
 package com.diariokanto.api.dtos;
 
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Data
 public class UsuarioRegistroDTO {
+
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(max = 50, message = "El nombre no puede tener más de 50 caracteres")
     private String nombreCompleto;
     private String username;
     private String email;

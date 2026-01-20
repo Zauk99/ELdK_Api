@@ -133,6 +133,12 @@ public class UsuarioService {
     }
 
     public UsuarioDTO actualizarPerfil(Long id, String username, String nombreCompleto, String pokemonFav, MultipartFile foto) throws IOException {
+        
+        // VALIDACIÓN MANUAL EXTRA
+        if (nombreCompleto != null && nombreCompleto.length() > 50) {
+            throw new RuntimeException("El nombre no puede superar los 50 caracteres.");
+        }
+
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
