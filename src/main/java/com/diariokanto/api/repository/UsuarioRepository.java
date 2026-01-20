@@ -4,6 +4,8 @@ import com.diariokanto.api.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
@@ -21,4 +23,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     // Para el Login (busca por email O por username)
     @Query("SELECT u FROM Usuario u WHERE u.email = :identifier OR u.username = :identifier")
     Optional<Usuario> findByEmailOrUsername(@Param("identifier") String identifier);
+
+    Page<Usuario> findByNombreCompletoContainingIgnoreCaseOrUsernameContainingIgnoreCase(String nombre, String username, Pageable pageable);
+
 }

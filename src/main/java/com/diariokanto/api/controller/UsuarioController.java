@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -59,10 +61,10 @@ public class UsuarioController {
 
     // GET /api/usuarios
     // GET /api/usuarios -> Listar todos
-    @GetMapping
+    /* @GetMapping
     public List<UsuarioDTO> listarTodos() {
         return usuarioService.listarTodos();
-    }
+    } */
 
     // PUT /api/usuarios/rol/{id} -> Cambiar rol
     @PutMapping("/rol/{id}")
@@ -120,7 +122,7 @@ public class UsuarioController {
 
     // PUT /api/usuarios/actualizar/{id}
     // PUT /api/usuarios/actualizar/{id} -> Datos generales
-    @PutMapping(value = "/actualizar/{id}", consumes = {"multipart/form-data"})
+    @PutMapping(value = "/actualizar/{id}", consumes = { "multipart/form-data" })
     public ResponseEntity<?> actualizarUsuario(
             @PathVariable Long id,
             @RequestParam("username") String username,
@@ -147,5 +149,20 @@ public class UsuarioController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    // En src/main/java/com/diariokanto/api/controller/UsuarioController.java
+    @GetMapping
+    public ResponseEntity<Page<UsuarioDTO>> listarUsuarios(
+            @RequestParam(required = false) String buscar,
+            Pageable pageable) {
+
+        Page<UsuarioDTO> pagina;
+        if (buscar != null && !buscar.isEmpty()) {
+            pagina = usuarioService.buscarPaginado(buscar, pageable);
+        } else {
+            pagina = usuarioService.obtenerTodosPaginado(pageable);
+        }
+        return ResponseEntity.ok(pagina);
     }
 }
