@@ -39,25 +39,30 @@ public class UsuarioService {
     @Autowired
     private ComentarioRepository comentarioRepository;
 
+    @Autowired
+    private EmailService emailService;
+
     // ==========================================
-    //       NUEVOS MÉTODOS DE PAGINACIÓN
+    // NUEVOS MÉTODOS DE PAGINACIÓN
     // ==========================================
 
     // 1. Obtener TODOS los usuarios paginados
     public Page<UsuarioDTO> obtenerTodosPaginado(Pageable pageable) {
-        // .map(this::mapearADTO) convierte automáticamente cada Entidad de la página a DTO
+        // .map(this::mapearADTO) convierte automáticamente cada Entidad de la página a
+        // DTO
         return usuarioRepository.findAll(pageable).map(this::mapearADTO);
     }
 
     // 2. BUSCAR usuarios paginados
     public Page<UsuarioDTO> buscarPaginado(String busqueda, Pageable pageable) {
         // CORRECCIÓN: Llamamos al nuevo método con 'NombreCompleto'
-        return usuarioRepository.findByNombreCompletoContainingIgnoreCaseOrUsernameContainingIgnoreCase(busqueda, busqueda, pageable)
+        return usuarioRepository
+                .findByNombreCompletoContainingIgnoreCaseOrUsernameContainingIgnoreCase(busqueda, busqueda, pageable)
                 .map(this::mapearADTO);
     }
 
     // ==========================================
-    //            LÓGICA DE NEGOCIO
+    // LÓGICA DE NEGOCIO
     // ==========================================
 
     public UsuarioDTO registrarUsuario(UsuarioRegistroDTO registroDTO) {
@@ -74,11 +79,14 @@ public class UsuarioService {
         usuario.setCuentaConfirmada(false);
 
         Usuario guardado = usuarioRepository.save(usuario);
-        
-        // Simulación Email
-        System.out.println("--- SIMULACIÓN EMAIL ---");
-        System.out.println("Para: " + guardado.getEmail());
-        System.out.println("Link: http://localhost:8081/confirmar?token=" + guardado.getTokenConfirmacion());
+
+        // ENVIAR CORREO REAL
+        try {
+            emailService.enviarCorreoConfirmacion(guardado.getEmail(), guardado.getTokenConfirmacion());
+        } catch (Exception e) {
+            System.err.println("Error enviando correo: " + e.getMessage());
+            // No lanzamos error para no cortar el registro, pero queda en el log
+        }
 
         return mapearADTO(guardado);
     }
@@ -102,13 +110,23 @@ public class UsuarioService {
         if (foto != null && !foto.isEmpty()) {
             String nombreUnico = "user_" + UUID.randomUUID() + "_" + foto.getOriginalFilename();
             Path rutaUploads = Paths.get("uploads");
-            if (!Files.exists(rutaUploads)) Files.createDirectories(rutaUploads);
+            if (!Files.exists(rutaUploads))
+                Files.createDirectories(rutaUploads);
             Files.copy(foto.getInputStream(), rutaUploads.resolve(nombreUnico));
             urlFoto = "http://localhost:8080/uploads/" + nombreUnico;
         }
         usuario.setFotoPerfilUrl(urlFoto);
 
         Usuario guardado = usuarioRepository.save(usuario);
+
+        // ENVIAR CORREO REAL
+        try {
+            emailService.enviarCorreoConfirmacion(guardado.getEmail(), guardado.getTokenConfirmacion());
+        } catch (Exception e) {
+            System.err.println("Error enviando correo: " + e.getMessage());
+            // No lanzamos error para no cortar el registro, pero queda en el log
+        }
+
         return mapearADTO(guardado);
     }
 
@@ -124,16 +142,17 @@ public class UsuarioService {
 
         usuario.setNombreCompleto(datosNuevos.getNombreCompleto());
         usuario.setMovil(datosNuevos.getMovil());
-        
+
         if (datosNuevos.getPassword() != null && !datosNuevos.getPassword().isEmpty()) {
             usuario.setPassword(passwordEncoder.encode(datosNuevos.getPassword()));
         }
-        
+
         return mapearADTO(usuarioRepository.save(usuario));
     }
 
-    public UsuarioDTO actualizarPerfil(Long id, String username, String nombreCompleto, String pokemonFav, MultipartFile foto) throws IOException {
-        
+    public UsuarioDTO actualizarPerfil(Long id, String username, String nombreCompleto, String pokemonFav,
+            MultipartFile foto) throws IOException {
+
         // VALIDACIÓN MANUAL EXTRA
         if (nombreCompleto != null && nombreCompleto.length() > 50) {
             throw new RuntimeException("El nombre no puede superar los 50 caracteres.");
@@ -155,14 +174,15 @@ public class UsuarioService {
         if (foto != null && !foto.isEmpty()) {
             String nombreUnico = "user_" + id + "_" + System.currentTimeMillis() + "_" + foto.getOriginalFilename();
             Path rutaUploads = Paths.get("uploads");
-            if (!Files.exists(rutaUploads)) Files.createDirectories(rutaUploads);
+            if (!Files.exists(rutaUploads))
+                Files.createDirectories(rutaUploads);
             Files.copy(foto.getInputStream(), rutaUploads.resolve(nombreUnico), StandardCopyOption.REPLACE_EXISTING);
             usuario.setFotoPerfilUrl("http://localhost:8080/uploads/" + nombreUnico);
         }
 
         return mapearADTO(usuarioRepository.save(usuario));
     }
-    
+
     public void cambiarPassword(Long id, String nuevaPassword) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -190,7 +210,7 @@ public class UsuarioService {
     }
 
     // DELETE (Con protecciones)
-    @Transactional 
+    @Transactional
     public void eliminarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -217,7 +237,7 @@ public class UsuarioService {
     }
 
     // ==========================================
-    //             MÉTODOS PRIVADOS
+    // MÉTODOS PRIVADOS
     // ==========================================
 
     private void validarRegistro(UsuarioRegistroDTO dto) {
@@ -239,7 +259,7 @@ public class UsuarioService {
         dto.setNombreCompleto(u.getNombreCompleto());
         dto.setUsername(u.getUsername());
         dto.setEmail(u.getEmail());
-        dto.setPokemonFavorito(u.getPokemonFavorito()); 
+        dto.setPokemonFavorito(u.getPokemonFavorito());
         dto.setRol(u.getRol());
         dto.setMovil(u.getMovil());
         dto.setSuperAdmin(u.isSuperAdmin());
