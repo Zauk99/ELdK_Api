@@ -6,7 +6,8 @@ import com.diariokanto.api.entity.Usuario;
 import com.diariokanto.api.service.UsuarioService;
 import com.diariokanto.api.repository.UsuarioRepository;
 
-import java.util.List;
+import java.io.IOException; // Necesario para la redirección
+import jakarta.servlet.http.HttpServletResponse; // Necesario para la respuesta HTTP
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,55 @@ public class UsuarioController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // GET /api/usuarios/buscar-email?email=ejemplo@test.com
+    // --- NUEVO ENDPOINT CONFIRMACIÓN (Que faltaba) ---
+    @GetMapping("/confirmar")
+    public void confirmarCuenta(@RequestParam("token") String token, HttpServletResponse response) throws IOException {
+        System.out.println(">>> API: Intentando confirmar cuenta con token: " + token);
+        boolean exito = usuarioService.confirmarCuenta(token);
+
+        if (exito) {
+            System.out.println(">>> API: ¡Cuenta confirmada con éxito!");
+            // Redirigir al login del Frontend con parámetro de éxito
+            response.sendRedirect("http://localhost:8080/login?activada=true");
+        } else {
+            System.err.println(">>> API: Fallo al confirmar (Token inválido o expirado)");
+            // Redirigir al login con error
+            response.sendRedirect("http://localhost:8080/login?error=token_invalido");
+        }
+    }
+
+    // --- LOGIN MODIFICADO CON DEBUG ---
+    @PostMapping("/login")
+    public ResponseEntity<?> validarLogin(@RequestBody UsuarioRegistroDTO loginData) {
+        String identificador = loginData.getEmail();
+        System.out.println(">>> API LOGIN: Intentando entrar con: " + identificador);
+
+        Usuario usuario = usuarioRepository.findByEmailOrUsername(identificador).orElse(null);
+
+        if (usuario == null) {
+            System.err.println(">>> API LOGIN: Usuario NO encontrado en la BD.");
+            return ResponseEntity.status(401).body("Usuario no encontrado");
+        }
+
+        // Verificar contraseña
+        if (!passwordEncoder.matches(loginData.getPassword(), usuario.getPassword())) {
+            System.err.println(">>> API LOGIN: Contraseña incorrecta para " + identificador);
+            return ResponseEntity.status(401).body("Contraseña incorrecta");
+        }
+
+        // --- VERIFICACIÓN DE CUENTA CONFIRMADA ---
+        if (!usuario.isCuentaConfirmada()) {
+            System.err.println(">>> API LOGIN: Usuario correcto pero cuenta NO ACTIVADA.");
+            // Devolvemos 403 Forbidden para que el Frontend sepa que es por falta de activación
+            return ResponseEntity.status(403).body("Cuenta no confirmada");
+        }
+
+        System.out.println(">>> API LOGIN: ¡Login correcto! Devolviendo usuario.");
+        return ResponseEntity.ok(usuarioService.buscarPorEmail(usuario.getEmail()));
+    }
+
+    // --- RESTO DE MÉTODOS (Igual que tenías) ---
+
     @GetMapping("/buscar-email")
     public ResponseEntity<UsuarioDTO> buscarPorEmail(@RequestParam String email) {
         UsuarioDTO usuario = usuarioService.buscarPorEmail(email);
@@ -39,34 +88,6 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    // POST /api/usuarios/login (Para verificar contraseña desde el Backend)
-    // Recibe un DTO con email y password cruda, devuelve el UsuarioDTO si es
-    // correcto
-    @PostMapping("/login")
-    public ResponseEntity<UsuarioDTO> validarLogin(@RequestBody UsuarioRegistroDTO loginData) {
-        // En loginData.getEmail() nos vendrá el correo O el username (porque usamos ese
-        // campo en el JSON)
-        String identificador = loginData.getEmail();
-
-        // Usamos el nuevo método del repositorio
-        Usuario usuario = usuarioRepository.findByEmailOrUsername(identificador).orElse(null);
-
-        if (usuario != null && passwordEncoder.matches(loginData.getPassword(), usuario.getPassword())) {
-            return ResponseEntity.ok(usuarioService.buscarPorEmail(usuario.getEmail()));
-        }
-        return ResponseEntity.status(401).build();
-    }
-
-    // ... dentro de UsuarioController ...
-
-    // GET /api/usuarios
-    // GET /api/usuarios -> Listar todos
-    /* @GetMapping
-    public List<UsuarioDTO> listarTodos() {
-        return usuarioService.listarTodos();
-    } */
-
-    // PUT /api/usuarios/rol/{id} -> Cambiar rol
     @PutMapping("/rol/{id}")
     public ResponseEntity<?> cambiarRol(@PathVariable Long id, @RequestBody String nuevoRol) {
         try {
@@ -89,28 +110,13 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.noContent().build();
     }
 
-    // POST /api/usuarios/registro
-    // Cambiamos a Multipart para aceptar fichero y datos
     @PostMapping(value = "/registro", consumes = { "multipart/form-data" })
     public ResponseEntity<?> registrar(
             @ModelAttribute UsuarioRegistroDTO registroDTO,
             @RequestParam(value = "foto", required = false) MultipartFile foto) {
-
-        // --- CHIVATOS DE DEBUG ---
-        System.out.println(">>> API: Petición de registro recibida para: " + registroDTO.getEmail());
-
-        if (foto == null) {
-            System.out.println(">>> API: La foto es NULL");
-        } else {
-            System.out.println(">>> API: Foto recibida. Nombre: " + foto.getOriginalFilename());
-            System.out.println(">>> API: Tamaño: " + foto.getSize() + " bytes");
-            System.out.println(">>> API: ¿Está vacía?: " + foto.isEmpty());
-        }
-        // -------------------------
-
         try {
             UsuarioDTO nuevoUsuario = usuarioService.registrarUsuarioConFoto(registroDTO, foto);
             return ResponseEntity.ok(nuevoUsuario);
@@ -120,8 +126,6 @@ public class UsuarioController {
         }
     }
 
-    // PUT /api/usuarios/actualizar/{id}
-    // PUT /api/usuarios/actualizar/{id} -> Datos generales
     @PutMapping(value = "/actualizar/{id}", consumes = { "multipart/form-data" })
     public ResponseEntity<?> actualizarUsuario(
             @PathVariable Long id,
@@ -130,7 +134,6 @@ public class UsuarioController {
             @RequestParam(value = "pokemonFavorito", required = false) String pokemonFav,
             @RequestParam(value = "foto", required = false) MultipartFile foto) {
         try {
-            // Nota: Quitamos 'movil' y 'password' de aquí
             UsuarioDTO actualizado = usuarioService.actualizarPerfil(id, username, nombre, pokemonFav, foto);
             return ResponseEntity.ok(actualizado);
         } catch (RuntimeException e) {
@@ -140,7 +143,6 @@ public class UsuarioController {
         }
     }
 
-    // PUT /api/usuarios/password/{id} -> Solo contraseña
     @PutMapping("/password/{id}")
     public ResponseEntity<?> cambiarPassword(@PathVariable Long id, @RequestBody String nuevaPassword) {
         try {
@@ -151,12 +153,10 @@ public class UsuarioController {
         }
     }
 
-    // En src/main/java/com/diariokanto/api/controller/UsuarioController.java
     @GetMapping
     public ResponseEntity<Page<UsuarioDTO>> listarUsuarios(
             @RequestParam(required = false) String buscar,
             Pageable pageable) {
-
         Page<UsuarioDTO> pagina;
         if (buscar != null && !buscar.isEmpty()) {
             pagina = usuarioService.buscarPaginado(buscar, pageable);

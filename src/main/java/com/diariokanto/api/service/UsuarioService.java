@@ -252,6 +252,24 @@ public class UsuarioService {
         }
     }
 
+    // --- NUEVO MÉTODO PARA ACTIVAR CUENTA ---
+    public boolean confirmarCuenta(String token) {
+        // Buscamos al usuario por el token
+        Usuario usuario = usuarioRepository.findByTokenConfirmacion(token)
+                .orElse(null);
+
+        if (usuario == null) {
+            return false; // Token no válido
+        }
+
+        // Activamos la cuenta
+        usuario.setCuentaConfirmada(true);
+        usuario.setTokenConfirmacion(null); // Borramos el token para que no se use dos veces
+        usuarioRepository.save(usuario);
+        
+        return true;
+    }
+
     private UsuarioDTO mapearADTO(Usuario u) {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setId(u.getId());
