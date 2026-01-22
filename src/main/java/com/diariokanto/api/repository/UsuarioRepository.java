@@ -24,6 +24,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query("SELECT u FROM Usuario u WHERE u.email = :identifier OR u.username = :identifier")
     Optional<Usuario> findByEmailOrUsername(@Param("identifier") String identifier);
 
+    // AÑADE ESTE:
+    Optional<Usuario> findByTokenRecuperacion(String token);
+
     Page<Usuario> findByNombreCompletoContainingIgnoreCaseOrUsernameContainingIgnoreCase(String nombre, String username, Pageable pageable);
 
 }

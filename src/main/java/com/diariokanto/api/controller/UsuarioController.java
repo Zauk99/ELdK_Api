@@ -37,13 +37,11 @@ public class UsuarioController {
         boolean exito = usuarioService.confirmarCuenta(token);
 
         if (exito) {
-            System.out.println(">>> API: ¡Cuenta confirmada con éxito!");
-            // Redirigir al login del Frontend con parámetro de éxito
-            response.sendRedirect("http://localhost:8080/login?activada=true");
+            // CAMBIO: Redirigimos al puerto del FRONTEND (8081)
+            response.sendRedirect("http://localhost:8081/login?activada=true");
         } else {
-            System.err.println(">>> API: Fallo al confirmar (Token inválido o expirado)");
-            // Redirigir al login con error
-            response.sendRedirect("http://localhost:8080/login?error=token_invalido");
+            // Error: Redirigimos al puerto del FRONTEND (8081)
+            response.sendRedirect("http://localhost:8081/login?error=token_invalido");
         }
     }
 
@@ -69,7 +67,8 @@ public class UsuarioController {
         // --- VERIFICACIÓN DE CUENTA CONFIRMADA ---
         if (!usuario.isCuentaConfirmada()) {
             System.err.println(">>> API LOGIN: Usuario correcto pero cuenta NO ACTIVADA.");
-            // Devolvemos 403 Forbidden para que el Frontend sepa que es por falta de activación
+            // Devolvemos 403 Forbidden para que el Frontend sepa que es por falta de
+            // activación
             return ResponseEntity.status(403).body("Cuenta no confirmada");
         }
 
@@ -164,5 +163,25 @@ public class UsuarioController {
             pagina = usuarioService.obtenerTodosPaginado(pageable);
         }
         return ResponseEntity.ok(pagina);
+    }
+
+    // 1. Endpoint para PEDIR el correo
+    @PostMapping("/solicitar-recuperacion")
+    public ResponseEntity<?> solicitarRecuperacion(@RequestParam String email) {
+        boolean enviado = usuarioService.solicitarRecuperacion(email);
+        // Respondemos OK siempre por seguridad, para no revelar qué emails existen
+        return ResponseEntity.ok("Si el correo existe, se ha enviado un mensaje.");
+    }
+
+    // 2. Endpoint para CAMBIAR la contraseña (con el token)
+    @PostMapping("/restablecer")
+    public ResponseEntity<?> restablecerPassword(@RequestParam String token, @RequestBody String nuevaPassword) {
+        boolean exito = usuarioService.restablecerPassword(token, nuevaPassword);
+        
+        if (exito) {
+            return ResponseEntity.ok("Contraseña actualizada correctamente.");
+        } else {
+            return ResponseEntity.badRequest().body("Token inválido o expirado.");
+        }
     }
 }

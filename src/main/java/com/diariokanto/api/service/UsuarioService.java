@@ -270,6 +270,40 @@ public class UsuarioService {
         return true;
     }
 
+    // 1. SOLICITAR RECUPERACIÓN (Genera token y envía email)
+    public boolean solicitarRecuperacion(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email).orElse(null);
+        
+        if (usuario != null) {
+            // Generamos token único
+            String token = UUID.randomUUID().toString();
+            usuario.setTokenRecuperacion(token);
+            usuarioRepository.save(usuario); // Guardamos el token en la BD
+            
+            // Enviamos el correo
+            emailService.enviarCorreoRecuperacion(usuario.getEmail(), token);
+            return true;
+        }
+        return false; // El usuario no existe (por seguridad no solemos decir esto al frontend, pero internamente lo controlamos)
+    }
+
+    // 2. RESTABLECER CONTRASEÑA (Recibe token y nueva pass)
+    public boolean restablecerPassword(String token, String nuevaPassword) {
+        // Buscamos usuario con ese token de recuperación (necesitas añadir este método al repositorio, ver paso 3)
+        Usuario usuario = usuarioRepository.findByTokenRecuperacion(token).orElse(null);
+
+        if (usuario == null) {
+            return false; // Token inválido
+        }
+
+        // Actualizamos password y borramos token
+        usuario.setPassword(passwordEncoder.encode(nuevaPassword));
+        usuario.setTokenRecuperacion(null); 
+        usuarioRepository.save(usuario);
+        
+        return true;
+    }
+
     private UsuarioDTO mapearADTO(Usuario u) {
         UsuarioDTO dto = new UsuarioDTO();
         dto.setId(u.getId());
