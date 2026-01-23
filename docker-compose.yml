@@ -11,20 +11,32 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kanto-net
 
   # Servicio 2: Tu API Backend
   api:
     build: .  # Construye usando el Dockerfile de esta carpeta
     container_name: diariokanto-api
-    ports:
-      - "8080:8080"
+    #ports:
+      #- "8080:8080"
     environment:
       # Conexión a la BBDD (usamos el nombre del servicio 'db' como host)
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/diariokanto_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_MAIL_USERNAME: eldiariodekanto@gmail.com  
+      SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
     depends_on:
       - db
+      
+    networks:      # <--- AÑADIDO
+      - kanto-net
+
+# Definimos la red para que se vean entre ellos
+networks:
+  kanto-net:
+    driver: bridge
 
 volumes:
   postgres_data:
