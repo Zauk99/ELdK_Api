@@ -32,13 +32,13 @@ public class DataInitializer {
             // 2. INICIALIZAR USUARIOS
             if (usuarioRepo.count() == 0) {
                 Usuario admin = new Usuario();
-                admin.setNombreCompleto("Administrador");
+                admin.setNombreCompleto("Pablo Herrera");
                 admin.setFotoPerfilUrl("http://localhost:8080/uploads/default-avatar.png");
-                admin.setEmail("admin@diariokanto.com");
-                admin.setUsername("adminMaster");
+                admin.setEmail("pablohd140605@gmail.com");
+                admin.setUsername("Zauk_1199");
                 admin.setPassword(passwordEncoder.encode("admin123"));
                 admin.setRol("ADMIN");
-                admin.setMovil("+34600000000");
+                admin.setMovil("666666666");
                 admin.setCuentaConfirmada(true);
                 admin.setSuperAdmin(true);
 
@@ -49,7 +49,7 @@ public class DataInitializer {
                 user.setUsername("ashKetchum");
                 user.setPassword(passwordEncoder.encode("pikachu123"));
                 user.setRol("USER");
-                user.setMovil("+34600123456");
+                user.setMovil("600123456");
                 user.setCuentaConfirmada(true);
                 user.setSuperAdmin(false);
 
@@ -61,6 +61,7 @@ public class DataInitializer {
             if (noticiaRepo.count() == 0) {
                 Categoria catMovil = categoriaRepo.findByNombre("Móvil").orElse(null);
                 Categoria catNintendo = categoriaRepo.findByNombre("Nintendo").orElse(null);
+                Categoria catTCG = categoriaRepo.findByNombre("TCG").orElse(null);
 
                 if (catMovil != null && catNintendo != null) {
                     Noticia n1 = new Noticia();
@@ -81,7 +82,16 @@ public class DataInitializer {
                     n2.setTagText("Nintendo");
                     n2.setTagClass("videogame-tag");
 
-                    noticiaRepo.saveAll(Arrays.asList(n1, n2));
+                    Noticia n3 = new Noticia();
+                    n3.setTitulo("Nueva expansión anunciada");
+                    n3.setContenidoHtml("<p>La nueva expansión sorprende a los jugadores y coleccionistas debido a su gran contenido de artes alternativos y secretos, con la combinación de la nueva ultra-premium collection, cosa que no se esperaba hasta el 30 aniversario.</p>");
+                    n3.setImagenUrl("img/switch.jpg");
+                    n3.setFechaPublicacion(LocalDateTime.now().minusDays(1));
+                    n3.setCategoria(catTCG);
+                    n3.setTagText("TCG");
+                    n3.setTagClass("tcg-tag");
+
+                    noticiaRepo.saveAll(Arrays.asList(n1, n2, n3));
                     System.out.println(">>> Noticias de prueba creadas.");
                 }
             }
@@ -91,7 +101,7 @@ public class DataInitializer {
             // equipoRepo.deleteAll(); 
             
             if (equipoRepo.count() == 0) {
-                Usuario admin = usuarioRepo.findByEmail("admin@diariokanto.com").orElse(null);
+                Usuario admin = usuarioRepo.findByEmail("pablohd140605@gmail.com").orElse(null);
                 Usuario ash = usuarioRepo.findByEmail("ash@kanto.com").orElse(null);
 
                 if (ash != null) {
